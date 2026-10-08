@@ -15,9 +15,41 @@ class Style:
     accent: str  # couleur d'accent, hex RRGGBB
     text: str  # couleur du texte principal, hex RRGGBB
     flash: bool  # flash blanc de 2 images entre le hook et la suite
+    hook_clip: bool = True  # plan d'accroche de 2 s avant le premier exercice
+    labels: bool = True  # étiquettes exercice / séries×reps / charge
+    caption: str = "bold"  # "bold" (gros, majuscules, animé) ou "classic" (sobre, minuscules)
+    max_cut: float = 4.5  # durée max d'un plan (s)
+    max_cuts: int = 3  # plans max par exercice
+    punch_every: float = 1.3  # "jumpcut" : alternance large/serré toutes les N s
+    punch_scale: float = 1.3
+    end_bias: float = 0.6  # 0 = début de série, 1 = privilégie fortement les dernières reps
+    lead_in: float = 0.0  # secondes gardées avant la série (mise en place)
+    default_target: float = 30.0
 
 
 STYLES: dict[str, Style] = {
+    # Mesuré sur le reel de référence « Athletic Leg Day » : un plan continu par exercice
+    # (3-11 s, vitesse réelle), zooms en coupe sèche large/serré toutes les ~1,3 s,
+    # couleurs naturelles, un seul petit titre en minuscules, mises en place conservées.
+    "athletic": Style(
+        key="athletic",
+        label="Athletic",
+        speed=1.0,
+        zoom="jumpcut",
+        grade="eq=contrast=1.04:saturation=1.04,unsharp=5:5:0.35",
+        accent="FFFFFF",
+        text="FFFFFF",
+        flash=False,
+        hook_clip=False,
+        labels=False,
+        caption="classic",
+        max_cut=9.0,
+        max_cuts=1,
+        punch_every=1.3,
+        punch_scale=1.3,
+        lead_in=1.5,
+        default_target=45.0,
+    ),
     "energique": Style(
         key="energique",
         label="Énergique",
@@ -53,7 +85,7 @@ STYLES: dict[str, Style] = {
     ),
 }
 
-DEFAULT_STYLE = "energique"
+DEFAULT_STYLE = "athletic"
 
 
 def get_style(key: str | None) -> Style:

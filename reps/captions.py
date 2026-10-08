@@ -11,6 +11,7 @@ from .styles import Style
 
 W, H = 1080, 1920
 FONT = "Inter Display Black"
+FONT_CLASSIC = "Inter Display SemiBold"
 
 
 def _ass_color(hex_rgb: str, alpha: int = 0) -> str:
@@ -27,8 +28,9 @@ def _ts(t: float) -> str:
     return f"{h}:{m:02d}:{s:02d}.{cs:02d}"
 
 
-def _clean(text: str) -> str:
-    return text.replace("\\", "/").replace("{", "(").replace("}", ")").replace("\n", " ").strip().upper()
+def _clean(text: str, upper: bool = True) -> str:
+    t = text.replace("\\", "/").replace("{", "(").replace("}", ")").replace("\n", " ").strip()
+    return t.upper() if upper else t
 
 
 def _accent_last_word(text: str, accent: str) -> str:
@@ -60,6 +62,7 @@ Style: Hook,{FONT},118,{white},{white},{black},{shadow},0,1,0,0,100,100,-1,0,1,0
 Style: Label,{FONT},86,{white},{white},{black},{shadow},0,1,0,0,100,100,-1,0,1,0,4,1,80,220,0,1
 Style: Sub,{FONT},48,{black},{black},{accent},{shadow},0,1,0,0,100,100,1,0,3,14,0,7,80,220,0,1
 Style: Counter,{FONT},44,{accent},{accent},{black},{shadow},0,1,0,0,100,100,2,0,1,0,3,9,80,80,0,1
+Style: Classic,{FONT_CLASSIC},60,{white},{white},{black},{_ass_color("000000", 0x90)},0,0,0,0,100,100,0,0,1,0,2,5,120,120,0,1
 Style: Cta,{FONT},78,{white},{white},{black},{shadow},0,1,0,0,100,100,-1,0,1,0,5,5,110,110,0,1
 
 [Events]
@@ -70,11 +73,15 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     def ev(c: Caption, style_name: str, text: str, layer: int = 0) -> None:
         lines.append(f"Dialogue: {layer},{_ts(c.start)},{_ts(c.end)},{style_name},,0,0,0,,{text}")
 
+    classic = style.caption == "classic"
     for c in plan.captions:
-        text = _clean(c.text)
+        text = _clean(c.text, upper=not classic)
         if not text:
             continue
-        if c.kind == "hook":
+        if classic and c.kind in ("hook", "cta"):
+            # Titre sobre façon texte natif Instagram : petit, centré, simple fondu.
+            ev(c, "Classic", "{\\an5\\pos(540,1000)\\fad(150,250)}" + text)
+        elif c.kind == "hook":
             ev(c, "Hook", "{\\an5\\pos(540,780)\\fad(0,140)" + POP + "}" + _accent_last_word(text, style.accent))
         elif c.kind == "cta":
             ev(c, "Cta", "{\\an5\\pos(540,900)\\fad(0,200)" + POP + "}" + _accent_last_word(text, style.accent))

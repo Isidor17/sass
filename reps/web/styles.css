@@ -142,7 +142,8 @@ main { width: min(1120px, 100%); margin: 0 auto; padding: clamp(20px, 4vw, 48px)
 .chip { padding: 6px 11px; border-radius: 99px; border: 1px solid var(--border); background: var(--surface); color: #c3c7cd; font-size: 12.5px; cursor: pointer; transition: all 0.2s var(--ease); }
 .chip:hover { border-color: rgba(198,255,0,0.5); color: var(--text); transform: translateY(-1px); }
 
-.styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.styles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+#labels-note { margin-top: 12px; }
 .style-card { position: relative; padding: 14px 12px 12px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; text-align: left; color: var(--text); font: inherit; transition: all 0.3s var(--ease); overflow: hidden; }
 .style-card .sw { display: block; width: 100%; height: 46px; border-radius: 9px; margin-bottom: 10px; background: linear-gradient(135deg, #1b1d21 30%, var(--sc) 160%); position: relative; overflow: hidden; }
 .style-card .sw::after { content: "AA"; position: absolute; left: 10px; bottom: 6px; font: italic 900 18px "Display", sans-serif; color: var(--sc); }

@@ -77,8 +77,10 @@
         <button class="ghost" id="add-ex" type="button">+ Ajouter un exercice</button>
         <datalist id="ex-names"></datalist>
 
-        <h3>Accroche <span class="muted small">2 premières secondes</span></h3>
-        <input id="hook" class="input" maxlength="40" placeholder="SÉANCE PECS">
+        <p class="note" id="labels-note" hidden>Ce style n'affiche pas les noms d'exercices à l'écran. La liste sert à associer les séries aux exercices et à bien choisir les plans.</p>
+
+        <h3>Titre <span class="muted small">premières secondes</span></h3>
+        <input id="hook" class="input" maxlength="40" placeholder="Athletic leg day">
         <div class="chips" data-for="hook"></div>
 
         <h3>Texte de fin</h3>
@@ -91,7 +93,7 @@
         <div id="styles" class="styles"></div>
 
         <h3>Durée cible <span class="muted small" id="target-val">30 s</span></h3>
-        <input id="target" type="range" min="15" max="60" step="1" value="30" class="range">
+        <input id="target" type="range" min="15" max="75" step="1" value="45" class="range">
 
         <h3>Musique <span class="muted small">optionnel</span></h3>
         <div class="music">

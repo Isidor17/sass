@@ -48,7 +48,7 @@ python -m reps.cli seance/*.mp4 \
   -e "Développé couché | 4x8 | 80kg" \
   -e "Dips lestés | 3x10 | +20kg" \
   --hook "Séance pecs" --cta "Enregistre pour ta prochaine séance" \
-  --style energique --duree 30 -o pecs.mp4
+  --style athletic -o pecs.mp4
 ```
 
 `--analyse-seule` liste les séries détectées avec leur identifiant. Pour en ignorer une, passe cet identifiant à `--exclure s0-2`.
@@ -65,9 +65,12 @@ python -m reps.cli seance/*.mp4 \
 
 | Style | Rythme | Caméra | Étalonnage |
 |---|---|---|---|
+| **Athletic** (défaut) | 1 plan continu par exercice (jusqu'à 9 s), vitesse réelle, mise en place gardée | alternance large / serré ×1,3 en coupe sèche toutes les 1,3 s | naturel, un seul petit titre en minuscules, pas d'étiquettes |
 | Énergique | plans accélérés ×1,1 | zoom « punch » en fin de plan, flash après le hook | contrasté, saturé, accent citron vert |
 | Cinématique | vitesse réelle | zoom lent continu | désaturé, tons froids, accent orange |
 | Clean | vitesse réelle | fixe | naturel |
+
+Le style Athletic est calé sur un reel de référence (« Athletic Leg Day ») mesuré image par image : environ 51 s, 7 à 8 exercices, plans de 3 à 11 s. Pour obtenir une vidéo de 45 à 50 s, filme 6 à 8 exercices.
 
 Les styles sont définis dans `reps/styles.py`. Tu peux en ajouter un en quelques lignes.
 

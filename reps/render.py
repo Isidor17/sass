@@ -27,8 +27,16 @@ def _crop_filter(info: VideoInfo, cx: float) -> str:
     return ""
 
 
-def _zoom_filter(clip: Clip, style: Style) -> str:
+def _zoom_filter(clip: Clip, style: Style, info: VideoInfo) -> str:
     d = clip.duration
+    if style.zoom == "jumpcut" and clip.role == "exercise":
+        if d < 2 * style.punch_every:
+            return ""
+        # Alternance large / serré en coupe sèche, centrée sur le sujet : simule plusieurs caméras.
+        z = f"(1+{style.punch_scale - 1:.3f}*mod(floor(t/{style.punch_every:.3f}),2))"
+        rx = 0.5 if info.aspect > TARGET_ASPECT + 0.01 else min(max(clip.cx, 0.2), 0.8)
+        return (f"scale=w='trunc({W}*{z}/2)*2':h=-2:eval=frame,"
+                f"crop={W}:{H}:x='(iw-ow)*{rx:.3f}':y='(ih-oh)*0.55'")
     if clip.role == "hook" or style.zoom == "push":
         amount = 0.10 if clip.role == "hook" else 0.06
         z = f"(1+{amount}*t/{d:.3f})"
@@ -77,7 +85,7 @@ def build_command(
         if crop:
             f.append(crop)
         f += [f"scale={W}:{H}:flags=lanczos", "setsar=1"]
-        zoom = _zoom_filter(c, style)
+        zoom = _zoom_filter(c, style, infos[c.source])
         if zoom:
             f.append(zoom)
         f.append(style.grade)

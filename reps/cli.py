@@ -37,8 +37,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("-o", "--output", default="montage.mp4")
     p.add_argument("--hook", default="", help="Texte d'accroche des 2 premières secondes")
     p.add_argument("--cta", default="", help="Texte de fin (appel à l'action)")
-    p.add_argument("--style", choices=sorted(STYLES), default="energique")
-    p.add_argument("--duree", type=float, default=30.0, help="Durée cible en secondes (défaut 30)")
+    p.add_argument("--style", choices=sorted(STYLES), default="athletic")
+    p.add_argument("--duree", type=float, help="Durée cible en secondes (défaut selon le style : 45 s Athletic, 30 s sinon)")
     p.add_argument("--musique", help="Fichier audio libre de droits (optionnel)")
     p.add_argument("--musique-debut", type=float, default=0.0, help="Démarrer la musique à N secondes")
     p.add_argument("--exclure", action="append", default=[], help="Identifiant de série à ignorer (ex. s0-2)")
@@ -71,7 +71,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             out, plan = make_video(
                 args.rushes, analyses, exercises, args.output, tmp,
-                style=args.style, hook=args.hook, cta=args.cta, target=args.duree,
+                style=args.style, hook=args.hook, cta=args.cta, target=args.duree or STYLES[args.style].default_target,
                 music=args.musique, music_start=args.musique_debut,
                 excluded=set(args.exclure), progress=_bar("Rendu  "),
             )

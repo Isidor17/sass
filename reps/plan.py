@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 
 import numpy as np
 
@@ -13,7 +13,6 @@ from .styles import Style
 HOOK_LEN = 2.0
 MIN_CUT = 1.6
 MAX_PER_EXERCISE = 14.0
-MAX_CUT = 4.5
 
 
 @dataclass
@@ -183,24 +182,29 @@ def build_plan(
     speed = style.speed
 
     def make_clip(seg: SetSegment, length: float, role: str, group: int) -> Clip:
-        src_len = min(length * speed, seg.duration)
         track = by_source[seg.source].track
-        start = best_window(track, seg, src_len)
+        if style.lead_in and role == "exercise":
+            # Comme la référence : on montre la mise en place puis les premières reps.
+            seg = replace(seg, start=max(0.0, seg.start - style.lead_in))
+            src_len = min(length * speed, seg.duration)
+            return Clip(seg.source, seg.start, round(src_len, 3), speed, seg.cx, role, group)
+        src_len = min(length * speed, seg.duration)
+        start = best_window(track, seg, src_len, end_bias=style.end_bias)
         return Clip(seg.source, start, round(src_len, 3), speed, seg.cx, role, group)
 
     clips: list[Clip] = []
     captions: list[Caption] = []
 
-    hook_len = _quantize(HOOK_LEN, bpm)
-    hero = max(active, key=_score)
-    clips.append(make_clip(hero, hook_len, "hook", -1))
-    if hook:
-        captions.append(Caption("hook", 0.0, clips[0].duration, hook))
+    hook_len = 0.0
+    if style.hook_clip:
+        hook_len = _quantize(HOOK_LEN, bpm)
+        hero = max(active, key=_score)
+        clips.append(make_clip(hero, hook_len, "hook", -1))
 
     per_group = float(np.clip((target - hook_len) / len(groups), 2.2, MAX_PER_EXERCISE))
     for gi, sets in enumerate(groups):
-        n_cuts = int(np.clip(round(per_group / 3.2), 1, len(sets)))
-        cut_len = _quantize(float(np.clip(per_group / n_cuts, MIN_CUT, MAX_CUT)), bpm)
+        n_cuts = int(np.clip(round(per_group / 3.2), 1, min(len(sets), style.max_cuts)))
+        cut_len = _quantize(float(np.clip(per_group / n_cuts, MIN_CUT, style.max_cut)), bpm)
         # Toujours la dernière série (fatigue, dernières reps), puis les plus intenses.
         picks = [sets[-1]] + sorted(sets[:-1], key=_score, reverse=True)
         picks = sorted(picks[:n_cuts], key=lambda s: (s.source, s.start))
@@ -208,7 +212,7 @@ def build_plan(
         for seg in picks:
             clips.append(make_clip(seg, cut_len, "exercise", gi))
         group_end = sum(c.duration for c in clips)
-        if exercises and gi < len(exercises):
+        if style.labels and exercises and gi < len(exercises):
             ex = exercises[gi]
             captions.append(
                 Caption("label", group_start + 0.08, group_end, ex.name, ex.detail,
@@ -216,6 +220,10 @@ def build_plan(
             )
 
     total = sum(c.duration for c in clips)
+    if hook:
+        # Avec plan d'accroche : le texte couvre ce plan. Sinon : les ~3,5 premières secondes.
+        hook_end = clips[0].duration if style.hook_clip else min(3.5, total)
+        captions.insert(0, Caption("hook", 0.0, hook_end, hook))
     if total < target - 3:
         warnings.append(
             f"Vidéo de {total:.0f} s au lieu de {target:.0f} s : pas assez de séries pour remplir "

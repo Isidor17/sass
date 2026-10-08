@@ -140,8 +140,8 @@ class RenderIn(BaseModel):
     exercises: list[ExerciseIn] = []
     hook: str = ""
     cta: str = ""
-    style: str = "energique"
-    target: float = Field(default=30.0, ge=8, le=90)
+    style: str = "athletic"
+    target: float = Field(default=45.0, ge=8, le=90)
     music_start: float = Field(default=0.0, ge=0)
     music_volume: float = Field(default=1.0, ge=0, le=2)
     sync_to_beat: bool = True
@@ -244,7 +244,8 @@ def project_file(pid: str, name: str) -> FileResponse:
 
 @app.get("/api/styles")
 def styles() -> list[dict]:
-    return [{"key": s.key, "label": s.label, "accent": s.accent} for s in STYLES.values()]
+    return [{"key": s.key, "label": s.label, "accent": s.accent, "target": s.default_target, "labels": s.labels}
+            for s in STYLES.values()]
 
 
 app.mount("/fonts", StaticFiles(directory=FONTS), name="fonts")

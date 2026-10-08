@@ -10,9 +10,9 @@ const EXERCISES = [
   "Presse à cuisses", "Leg curl", "Leg extension", "Curl biceps", "Curl marteau", "Extension triceps",
   "Élévations latérales", "Écarté poulie", "Tirage vertical", "Pompes", "Burpees", "Gainage", "Mollets",
 ];
-const HOOKS = ["Séance pecs", "Leg day", "Push day", "Pull day", "Séance dos", "Full body", "Séance épaules"];
+const HOOKS = ["Athletic leg day", "Upper body", "Séance pecs", "Leg day", "Push day", "Pull day", "Séance dos", "Full body", "Séance épaules"];
 const CTAS = ["Enregistre pour ta prochaine séance", "Abonne-toi pour la suite", "Tu tiens combien ? Dis-le en commentaire"];
-const STYLE_DESC = { energique: "Coupes rapides, zooms punch", cinematique: "Zoom lent, tons froids", clean: "Naturel, sans effet" };
+const STYLE_DESC = { athletic: "Plan continu, zooms en coupe sèche, naturel", energique: "Coupes rapides, zooms punch", cinematique: "Zoom lent, tons froids", clean: "Naturel, sans effet" };
 const LS_KEY = "reps.session.v1";
 
 const state = {
@@ -20,7 +20,7 @@ const state = {
   project: null,
   excluded: new Set(),
   groups: [],
-  style: "energique",
+  style: "athletic",
   exercises: [],
 };
 
@@ -321,6 +321,8 @@ async function loadStyles() {
   try { list = await api("/api/styles"); } catch { return; }
   const host = $("#styles");
   host.innerHTML = "";
+  const current = list.find((s) => s.key === state.style);
+  if (current) $("#labels-note").hidden = current.labels;
   list.forEach((s) => {
     const b = document.createElement("button");
     b.type = "button";
@@ -330,6 +332,10 @@ async function loadStyles() {
     b.addEventListener("click", () => {
       state.style = s.key;
       host.querySelectorAll(".style-card").forEach((c) => c.classList.toggle("on", c === b));
+      const t = $("#target");
+      t.value = s.target;
+      t.dispatchEvent(new Event("input"));
+      $("#labels-note").hidden = s.labels;
       save();
     });
     host.appendChild(b);

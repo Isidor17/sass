@@ -100,6 +100,27 @@ class PipelineTest(unittest.TestCase):
         self.assertAlmostEqual(float(meta["format"]["duration"]), plan.duration, delta=0.2)
         self.assertTrue(path.with_suffix(".jpg").is_file())
 
+    def test_athletic_style_plan(self) -> None:
+        analyses = analyze_sources([str(self.vertical), str(self.landscape)])
+        exercises = [parse_exercise("Squat | 2x5"), parse_exercise("Fentes | 2x8")]
+        plan = build_plan(analyses, exercises, get_style("athletic"), hook="Athletic leg day", target=45)
+        # Pas de plan d'accroche, un seul plan continu par exercice, pas d'étiquettes.
+        self.assertEqual([c.role for c in plan.clips], ["exercise", "exercise"])
+        self.assertTrue(all(c.speed == 1.0 for c in plan.clips))
+        self.assertEqual([c.kind for c in plan.captions], ["hook"])
+        # Mise en place conservée : le plan démarre avant la série détectée.
+        first_set = analyses[0].sets[1]  # dernière série du squat
+        self.assertLess(plan.clips[0].start, first_set.start + 0.01)
+        ass = build_ass(plan, get_style("athletic"))
+        self.assertIn("Athletic leg day", ass)  # pas de passage en majuscules
+
+    def test_render_athletic_jumpcut(self) -> None:
+        analyses = analyze_sources([str(self.vertical)])
+        path, plan = make_video([str(self.vertical)], analyses, [], self.dir / "ath.mp4", self.dir / "work-ath",
+                                style="athletic", hook="Leg day", target=12)
+        self.assertTrue(path.is_file())
+        self.assertGreater(plan.duration, 5)
+
     def test_bpm_estimation(self) -> None:
         click = self.dir / "click.wav"
         # Clic de 50 ms toutes les 0,5 s = 120 BPM.
