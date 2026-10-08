@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reps — montage automatique</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23C6FF00'/%3E%3Cpath d='M9 22V10h7a4 4 0 0 1 0 8h-7m7 0 5 4' stroke='%2307080A' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grid"></div></div>
+
+<header class="top">
+  <a class="logo" href="/"><span class="logo-mark">R</span><span>REPS</span></a>
+  <nav class="stepper" aria-label="Étapes">
+    <span class="step-pill" data-step="1"><b>1</b>Rushes</span>
+    <span class="step-pill" data-step="2"><b>2</b>Séries</span>
+    <span class="step-pill" data-step="3"><b>3</b>Séance</span>
+    <span class="step-pill" data-step="4"><b>4</b>Vidéo</span>
+  </nav>
+</header>
+
+<main>
+  <!-- 1. Dépôt -->
+  <section id="s-upload" class="panel hero reveal">
+    <p class="eyebrow">Montage automatique · 9:16 · TikTok & Reels</p>
+    <h1>Filme ta séance.<br><span class="accent">On fait le montage.</span></h1>
+    <p class="lead">Dépose tes rushes filmés sur trépied. Reps détecte tes séries, coupe les temps de repos, recadre en vertical, ajoute les textes et exporte une vidéo prête à publier.</p>
+
+    <label id="drop" class="drop" tabindex="0">
+      <input id="file" type="file" accept="video/*" multiple hidden>
+      <div class="drop-inner">
+        <div class="drop-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0-5 5m5-5 5 5"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        </div>
+        <strong>Glisse tes vidéos ici</strong>
+        <span>ou clique pour choisir · plusieurs fichiers acceptés, dans l'ordre du tournage</span>
+      </div>
+      <div class="drop-progress" hidden>
+        <div class="bar"><i id="up-bar"></i></div>
+        <span id="up-text">Envoi…</span>
+      </div>
+    </label>
+
+    <ul class="tips">
+      <li><b>Trépied fixe</b> le mouvement sert à détecter tes séries</li>
+      <li><b>Vertical, 1080p ou 4K</b> pour une image nette</li>
+      <li><b>Corps entier dans le cadre</b> pendant chaque série</li>
+    </ul>
+  </section>
+
+  <!-- 2. Analyse -->
+  <section id="s-analysis" class="panel" hidden>
+    <div class="panel-head">
+      <div><p class="eyebrow">Étape 2</p><h2>Tes séries</h2></div>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div id="analyzing" class="analyzing">
+      <div class="pulse-ring"><span id="an-pct">0%</span></div>
+      <div><strong>Analyse du mouvement…</strong><p class="muted">Repérage des séries et des temps de repos.</p></div>
+    </div>
+    <div id="timelines"></div>
+    <p class="hint" id="tl-hint" hidden>Clique sur une série pour l'exclure du montage (faux départ, réglage du matériel…). Les couleurs indiquent l'exercice associé.</p>
+  </section>
+
+  <!-- 3. Séance -->
+  <section id="s-session" class="panel" hidden>
+    <div class="panel-head">
+      <div><p class="eyebrow">Étape 3</p><h2>Ta séance</h2></div>
+      <div class="estimate" id="estimate"></div>
+    </div>
+
+    <div class="cols">
+      <div class="col">
+        <h3>Exercices <span class="muted small">dans l'ordre</span></h3>
+        <div id="exercises" class="exercises"></div>
+        <button class="ghost" id="add-ex" type="button">+ Ajouter un exercice</button>
+        <datalist id="ex-names"></datalist>
+
+        <h3>Accroche <span class="muted small">2 premières secondes</span></h3>
+        <input id="hook" class="input" maxlength="40" placeholder="SÉANCE PECS">
+        <div class="chips" data-for="hook"></div>
+
+        <h3>Texte de fin</h3>
+        <input id="cta" class="input" maxlength="60" placeholder="Enregistre pour ta prochaine séance">
+        <div class="chips" data-for="cta"></div>
+      </div>
+
+      <div class="col">
+        <h3>Style</h3>
+        <div id="styles" class="styles"></div>
+
+        <h3>Durée cible <span class="muted small" id="target-val">30 s</span></h3>
+        <input id="target" type="range" min="15" max="60" step="1" value="30" class="range">
+
+        <h3>Musique <span class="muted small">optionnel</span></h3>
+        <div class="music">
+          <p class="note">Recommandé : laisse vide et ajoute un <b>son tendance</b> au moment de publier sur TikTok/Instagram. Il est sous licence et booste la portée.</p>
+          <label class="ghost file-btn"><input id="music" type="file" accept="audio/*" hidden>Importer un morceau libre de droits</label>
+          <div id="music-info" class="music-info" hidden></div>
+          <div id="music-opts" hidden>
+            <label class="row-label">Volume <input id="music-vol" type="range" min="0" max="1.5" step="0.05" value="1" class="range"></label>
+            <label class="row-label">Démarrer à <input id="music-start" type="number" min="0" step="0.5" value="0" class="input tiny"> s</label>
+            <label class="switch"><input id="beat" type="checkbox" checked><span></span>Caler les coupes sur le tempo</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="warnings" id="plan-warnings"></div>
+    <button class="cta" id="render" type="button"><span>Monter la vidéo</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></button>
+  </section>
+
+  <!-- 4. Résultat -->
+  <section id="s-result" class="panel" hidden>
+    <div class="panel-head"><div><p class="eyebrow">Étape 4</p><h2 id="result-title">Montage en cours</h2></div></div>
+    <div class="result">
+      <div class="phone">
+        <div class="phone-screen">
+          <div id="rendering" class="rendering">
+            <svg class="ring" viewBox="0 0 120 120"><circle cx="60" cy="60" r="52"/><circle id="ring" cx="60" cy="60" r="52"/></svg>
+            <span id="r-pct">0%</span>
+            <p class="muted small">Découpe · recadrage · textes · export</p>
+          </div>
+          <video id="video" playsinline loop controls hidden></video>
+        </div>
+      </div>
+      <div class="result-side" id="result-side" hidden>
+        <p class="lead" id="result-meta"></p>
+        <div class="actions">
+          <a class="cta" id="dl-video" download><span>Télécharger la vidéo</span></a>
+          <a class="ghost" id="dl-cover" download>Couverture (.jpg)</a>
+        </div>
+        <div class="warnings" id="result-warnings"></div>
+        <ol class="publish">
+          <li>Envoie la vidéo sur ton téléphone (AirDrop, Drive, câble).</li>
+          <li>TikTok / Instagram → nouvelle publication → choisis la vidéo.</li>
+          <li>Ajoute un son tendance, la couverture, puis publie.</li>
+        </ol>
+        <p class="muted small" id="result-path"></p>
+        <button class="ghost" id="again" type="button">← Modifier les réglages</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+</main>
+
+<footer class="foot muted small">Reps · tout tourne sur ton ordinateur, aucune vidéo n'est envoyée en ligne.</footer>
+<script src="app.js"></script>
+</body>
+</html>
