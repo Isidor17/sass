@@ -180,7 +180,8 @@ function renderTimelines() {
     const el = document.createElement("div");
     el.className = "timeline";
     el.style.animationDelay = si * 80 + "ms";
-    const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) => `<span>${fmt(f * src.duration)}</span>`).join("");
+    const tick = (t) => (src.duration < 20 ? `${t.toFixed(1)} s` : fmt(t));
+    const ticks = [0, 0.25, 0.5, 0.75, 1].map((f) => `<span>${tick(f * src.duration)}</span>`).join("");
     el.innerHTML = `
       <div class="tl-head"><span>${esc(src.name)}</span><span class="muted">${src.width}×${src.height} · ${fmt(src.duration)}</span></div>
       <div class="tl-track">
