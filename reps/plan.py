@@ -63,8 +63,9 @@ class Clip:
     src_duration: float  # durée prélevée dans le rush
     speed: float
     cx: float
-    role: str  # "hook" | "exercise"
+    role: str  # "hook" | "teaser" | "exercise"
     group: int = -1
+    punch: float = 1.0  # zoom fixe (plans de teaser)
 
     @property
     def duration(self) -> float:
@@ -200,6 +201,21 @@ def build_plan(
         hook_len = _quantize(HOOK_LEN, bpm)
         hero = max(active, key=_score)
         clips.append(make_clip(hero, hook_len, "hook", -1))
+    elif style.teaser_shots:
+        # Aperçu de la séance : un plan par exercice (en boucle), de plus en plus courts.
+        used: dict[str, int] = {}
+        for i, d in enumerate(np.geomspace(0.85, 0.28, style.teaser_shots)):
+            g = groups[i % len(groups)]
+            seg = g[(i // len(groups)) % len(g)]
+            c = make_clip(seg, float(d), "teaser", -1)
+            n = used.get(seg.id, 0)
+            if n:  # même série déjà montrée : on décale pour ne pas répéter l'image
+                later = c.start + 1.2 * n
+                c.start = round(later if later + c.src_duration <= seg.end else max(seg.start, c.start - 1.2 * n), 3)
+            used[seg.id] = n + 1
+            c.punch = style.punch_scale if i % 3 == 2 else 1.0
+            clips.append(c)
+        hook_len = sum(c.duration for c in clips)
 
     per_group = float(np.clip((target - hook_len) / len(groups), 2.2, MAX_PER_EXERCISE))
     for gi, sets in enumerate(groups):
@@ -222,7 +238,7 @@ def build_plan(
     total = sum(c.duration for c in clips)
     if hook:
         # Avec plan d'accroche : le texte couvre ce plan. Sinon : les ~3,5 premières secondes.
-        hook_end = clips[0].duration if style.hook_clip else min(3.5, total)
+        hook_end = hook_len if hook_len else min(3.5, total)
         captions.insert(0, Caption("hook", 0.0, hook_end, hook))
     if total < target - 3:
         warnings.append(

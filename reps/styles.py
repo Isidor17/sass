@@ -25,6 +25,8 @@ class Style:
     end_bias: float = 0.6  # 0 = début de série, 1 = privilégie fortement les dernières reps
     lead_in: float = 0.0  # secondes gardées avant la série (mise en place)
     default_target: float = 30.0
+    teaser_shots: int = 0  # intro : N plans très courts qui accélèrent, sous le titre
+    caption_upper: bool = True  # titre "classic" en majuscules
 
 
 STYLES: dict[str, Style] = {
@@ -49,6 +51,30 @@ STYLES: dict[str, Style] = {
         punch_scale=1.3,
         lead_in=1.5,
         default_target=45.0,
+        caption_upper=False,
+    ),
+    # Mesuré sur le reel de référence « Train like an athlete » (20,7 s) : intro de 3,9 s
+    # où 8 plans accélèrent (0,8 s -> 0,27 s) sous un titre en majuscules, puis 5 exercices
+    # d'environ 3,3 s avec alternance large/serré toutes les ~1,1 s, ambiance sombre.
+    "athletic_rapide": Style(
+        key="athletic_rapide",
+        label="Athletic rapide",
+        speed=1.0,
+        zoom="jumpcut",
+        grade="eq=contrast=1.08:saturation=0.86:brightness=-0.03,unsharp=5:5:0.35",
+        accent="FFFFFF",
+        text="FFFFFF",
+        flash=False,
+        hook_clip=False,
+        labels=False,
+        caption="classic",
+        max_cut=3.6,
+        max_cuts=1,
+        punch_every=1.1,
+        punch_scale=1.3,
+        end_bias=0.3,
+        default_target=21.0,
+        teaser_shots=8,
     ),
     "energique": Style(
         key="energique",

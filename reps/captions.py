@@ -75,12 +75,13 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
     classic = style.caption == "classic"
     for c in plan.captions:
-        text = _clean(c.text, upper=not classic)
+        text = _clean(c.text, upper=style.caption_upper or not classic)
         if not text:
             continue
         if classic and c.kind in ("hook", "cta"):
             # Titre sobre façon texte natif Instagram : petit, centré, simple fondu.
-            ev(c, "Classic", "{\\an5\\pos(540,1000)\\fad(150,250)}" + text)
+            size = "\\fs70" if style.caption_upper else ""
+            ev(c, "Classic", "{\\an5\\pos(540,1000)\\fad(150,250)" + size + "}" + text)
         elif c.kind == "hook":
             ev(c, "Hook", "{\\an5\\pos(540,780)\\fad(0,140)" + POP + "}" + _accent_last_word(text, style.accent))
         elif c.kind == "cta":

@@ -29,6 +29,10 @@ def _crop_filter(info: VideoInfo, cx: float) -> str:
 
 def _zoom_filter(clip: Clip, style: Style, info: VideoInfo) -> str:
     d = clip.duration
+    if clip.role == "teaser":
+        if clip.punch <= 1.0:
+            return ""
+        return f"scale=w='trunc({W}*{clip.punch:.3f}/2)*2':h=-2,crop={W}:{H}:y='(ih-oh)*0.55'"
     if style.zoom == "jumpcut" and clip.role == "exercise":
         if d < 2 * style.punch_every:
             return ""

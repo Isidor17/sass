@@ -121,6 +121,25 @@ class PipelineTest(unittest.TestCase):
         self.assertTrue(path.is_file())
         self.assertGreater(plan.duration, 5)
 
+    def test_athletic_rapide_teaser(self) -> None:
+        analyses = analyze_sources([str(self.vertical), str(self.landscape)])
+        exercises = [parse_exercise("Squat | 2x5"), parse_exercise("Fentes | 2x8")]
+        st = get_style("athletic_rapide")
+        plan = build_plan(analyses, exercises, st, hook="Train like an athlete", target=21)
+        roles = [c.role for c in plan.clips]
+        self.assertEqual(roles[:8], ["teaser"] * 8)
+        self.assertEqual(roles[8:], ["exercise", "exercise"])
+        teaser = [c.duration for c in plan.clips[:8]]
+        self.assertTrue(all(a > b for a, b in zip(teaser, teaser[1:])))  # accélération
+        self.assertAlmostEqual(sum(teaser), 4.1, delta=0.4)
+        hook = plan.captions[0]
+        self.assertAlmostEqual(hook.end, sum(teaser), delta=0.01)  # titre sur toute l'intro
+        self.assertIn("TRAIN LIKE AN ATHLETE", build_ass(plan, st))
+        path, _ = make_video([str(self.vertical), str(self.landscape)], analyses, exercises,
+                             self.dir / "rapide.mp4", self.dir / "work-rapide", style="athletic_rapide",
+                             hook="Train like an athlete", target=21)
+        self.assertTrue(path.is_file())
+
     def test_bpm_estimation(self) -> None:
         click = self.dir / "click.wav"
         # Clic de 50 ms toutes les 0,5 s = 120 BPM.

@@ -66,11 +66,12 @@ python -m reps.cli seance/*.mp4 \
 | Style | Rythme | Caméra | Étalonnage |
 |---|---|---|---|
 | **Athletic** (défaut) | 1 plan continu par exercice (jusqu'à 9 s), vitesse réelle, mise en place gardée | alternance large / serré ×1,3 en coupe sèche toutes les 1,3 s | naturel, un seul petit titre en minuscules, pas d'étiquettes |
+| **Athletic rapide** | intro « teaser » de ~4 s (8 plans de 0,85 s à 0,28 s sous le titre), puis 1 plan d'environ 3,4 s par exercice | alternance large / serré ×1,3 toutes les 1,1 s | sombre et peu saturé, titre en MAJUSCULES |
 | Énergique | plans accélérés ×1,1 | zoom « punch » en fin de plan, flash après le hook | contrasté, saturé, accent citron vert |
 | Cinématique | vitesse réelle | zoom lent continu | désaturé, tons froids, accent orange |
 | Clean | vitesse réelle | fixe | naturel |
 
-Le style Athletic est calé sur un reel de référence (« Athletic Leg Day ») mesuré image par image : environ 51 s, 7 à 8 exercices, plans de 3 à 11 s. Pour obtenir une vidéo de 45 à 50 s, filme 6 à 8 exercices.
+Le style Athletic est calé sur un reel de référence (« Athletic Leg Day ») mesuré image par image : environ 51 s, 7 à 8 exercices, plans de 3 à 11 s. Pour obtenir une vidéo de 45 à 50 s, filme 6 à 8 exercices. Le style Athletic rapide est calé sur un second reel (« Train like an athlete », 20,7 s, 5 exercices).
 
 Les styles sont définis dans `reps/styles.py`. Tu peux en ajouter un en quelques lignes.
 

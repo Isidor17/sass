@@ -10,9 +10,9 @@ const EXERCISES = [
   "Presse à cuisses", "Leg curl", "Leg extension", "Curl biceps", "Curl marteau", "Extension triceps",
   "Élévations latérales", "Écarté poulie", "Tirage vertical", "Pompes", "Burpees", "Gainage", "Mollets",
 ];
-const HOOKS = ["Athletic leg day", "Upper body", "Séance pecs", "Leg day", "Push day", "Pull day", "Séance dos", "Full body", "Séance épaules"];
+const HOOKS = ["Train like an athlete", "Athletic leg day", "Upper body", "Séance pecs", "Leg day", "Push day", "Pull day", "Séance dos", "Full body", "Séance épaules"];
 const CTAS = ["Enregistre pour ta prochaine séance", "Abonne-toi pour la suite", "Tu tiens combien ? Dis-le en commentaire"];
-const STYLE_DESC = { athletic: "Plan continu, zooms en coupe sèche, naturel", energique: "Coupes rapides, zooms punch", cinematique: "Zoom lent, tons froids", clean: "Naturel, sans effet" };
+const STYLE_DESC = { athletic: "Plan continu, zooms en coupe sèche, naturel", athletic_rapide: "Intro teaser, plans de 3 s, ambiance sombre", energique: "Coupes rapides, zooms punch", cinematique: "Zoom lent, tons froids", clean: "Naturel, sans effet" };
 const LS_KEY = "reps.session.v1";
 
 const state = {
